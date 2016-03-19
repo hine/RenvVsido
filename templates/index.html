@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <link rel="stylesheet" href="{{ static_url("FlexiJsonEditor/jsoneditor.css") }}"/>
+    <link rel="stylesheet" href="{{ static_url("style.css") }}"/>
+  </head>
+  <body>
+    <p>
+      <div id="robot_connection" style="margin: 0 auto;">
+        ロボットの電源を入れ、接続しているシリアルポートを調べ、以下に入力した後、ロボットに接続する。<br />
+        シリアルポート:
+        <input id="serial-port" type="text" class="input-text" style="width: 300px;">
+        <input id="robot-connect" class="button" type="button" value="ロボット接続">
+        <input id="robot-disconnect" class="button-disable" type="button" value="ロボット切断" disabled>
+      </div>
+    </p>
+    <p>
+      <div id="scratch-json" style="margin: 0 auto;">
+        Scratchコマンド定義のJSONデータ:<br />
+        <textarea id="json-data" class="input_textarea" cols=80 rows=10></textarea><br />
+        <div id="editor" class="json-editor"></div>
+        <div id="legend">
+          <span id="expander">Expand all</span>
+          <span class="array">array</span>
+          <span class="object">object</span>
+          <span class="string">string</span>
+          <span class="number">number</span>
+          <span class="boolean">boolean</span>
+          <span class="null">null</span>
+          <span>Remove item by deleting a property name.</span>
+        </div>
+        <input id="save-json" class="button-disable" type="button" value="JSON送信/保存" disabled>
+      </div>
+    </p>
+    <p>
+      <div id="renv-connection" style="margin: 0 auto;">
+        R-env(連舞)に接続します。<br />
+        ウェブソケット:
+        <input id="websocket" type="text" class="input-text" style="width: 300px;" value="ws://192.168.1.200:8080">
+        <input id="renv-connect" class="button" type="button" value="R-env接続">
+        <input id="renv-disconnect" class="button-disable" type="button" value="R-env切断" disabled>
+      </div>
+    </p>
+    <div id="received-message" class="text" style="margin-top: 10px;">
+      sent_data:<div id="sent-command"></div><br />
+      received_data:<div id="received-data"></div><br />
+    </div>
+    <script src="{{ static_url("jquery-1.12.0.min.js") }}"></script>
+    <script src="{{ static_url("FlexiJsonEditor/jquery.jsoneditor.min.js") }}"></script>
+    <script src="{{ static_url("main.js") }}"></script>
+  </body>
+</html>
