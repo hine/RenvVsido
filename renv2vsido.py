@@ -139,7 +139,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         md.set_motion_dataset(motion_data)
         self.write_message(json.dumps({'message': 'motion_command', 'json_data': motion_data}))
         if state['robot_connected']:
-            self.write_message(json.dumps({'message': 'motion_command', 'json_data': motion_data}))
+            self.write_message(json.dumps({'message': 'robot_connected'}))
         if state['renv_connected']:
             self.write_message(json.dumps({'message': 'renv_connected'}))
 
