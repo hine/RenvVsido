@@ -240,8 +240,8 @@ class RenvConnecter(TornadoWebSocketClient):
                 self.send_event("motion_done")
 
     def closed(self, code, reason=None):
-        tornado.ioloop.IOLoop.instance().stop()
-        print("Connection closed.")
+        #tornado.ioloop.IOLoop.instance().stop()
+        print("R-env connection closed.")
 
     def send_device_connection_info(self):
         self.send(json.dumps(device_connection_info))
