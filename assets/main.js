@@ -1,6 +1,7 @@
 (function() {
 
-  var ws = new WebSocket("ws://localhost:8888/ws");
+  var hostname = location.host;
+  var ws = new WebSocket("ws://" + hostname + "/ws");
 
   ws.onopen = function() {
     // WebSocketオープン時の挙動を書く

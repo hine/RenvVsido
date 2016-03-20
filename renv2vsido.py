@@ -41,6 +41,12 @@ device_connection_info = {
 					"paramLimitation": "FreeForm"
 				}
 			]
+		},
+		{
+			"eventName": "motion_done",
+			"eventType": "Out",
+			"eventComment": "モーション終了を伝えます",
+			"hasParam": False
 		}
 	]
 }
@@ -201,7 +207,7 @@ class RenvConnecter(TornadoWebSocketClient):
     def received_message(self, m):
         print(m)
         message = json.loads(m.data.decode())
-        print(type(message))
+        #print(type(message))
         if message["eventName"] == "Renv.System.StartTransportEvent":
             print("Renv: Connected.")
         elif message["eventName"] == "motion":
@@ -212,7 +218,7 @@ class RenvConnecter(TornadoWebSocketClient):
             if motion_name in md.get_motion_list():
                 motion = md.get_motion_data(motion_name)
                 motion_type = motion['type']
-                print(motion)
+                #print(motion)
                 if motion_type == 'motion':
                     motion_list = motion['data']
                 else:
@@ -231,6 +237,7 @@ class RenvConnecter(TornadoWebSocketClient):
                         vc.set_pwm_pulse_width(*motion_data['data'])
                     if motion_data['type'] == 'wait':
                         time.sleep(motion_data['time'] / 1000)
+                self.send_event("motion_done")
 
     def closed(self, code, reason=None):
         tornado.ioloop.IOLoop.instance().stop()
@@ -238,6 +245,9 @@ class RenvConnecter(TornadoWebSocketClient):
 
     def send_device_connection_info(self):
         self.send(json.dumps(device_connection_info))
+
+    def send_event(self, event_name):
+        self.send(json.dumps({"eventName": event_name}))
 
 if __name__ == '__main__':
 
