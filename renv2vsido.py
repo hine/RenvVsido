@@ -51,6 +51,11 @@ device_connection_info = {
 	]
 }
 
+state = {
+    'robot_connected': False,
+    'renv_connected':False,
+}
+
 class MotionData(object):
     '''ロボットのモーションデータに関するデータの保持ならびにやりとりを行う
     '''
@@ -125,6 +130,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         global md
+        global state
         self.i = 0
         self.callback = tornado.ioloop.PeriodicCallback(self._send_message, 50)
         self.callback.start()
@@ -132,6 +138,10 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         motion_data = md.read_json_file()
         md.set_motion_dataset(motion_data)
         self.write_message(json.dumps({'message': 'motion_command', 'json_data': motion_data}))
+        if state['robot_connected']:
+            self.write_message(json.dumps({'message': 'motion_command', 'json_data': motion_data}))
+        if state['renv_connected']:
+            self.write_message(json.dumps({'message': 'renv_connected'}))
 
     def check_origin(self, origin):
         ''' アクセス元チェックをしないように上書き '''
@@ -141,6 +151,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         global vc
         global md
         global ws
+        global state
+
         received_data = json.loads(message)
         print('got message:', received_data['command'])
         if received_data['command'] == 'robot_connect':
@@ -155,12 +167,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 self.write_message(json.dumps({'message': 'robot_connected'}))
                 # PWMで目を光らせる場合に必要
                 vc.set_vid_use_pwm();
+                state['robot_connected'] = True
                 print('done')
         elif received_data['command'] == 'robot_disconnect':
             print('Disconnecting from V-Sido CONNECT...', end='')
             # V-Sido CONNECTから切断
             vc.disconnect()
             self.write_message(json.dumps({'message': 'robot_disconnected'}))
+            state['robot_connected'] = False
             print('done')
         elif received_data['command'] == 'set_motion_command':
             print('Renewaling/Saving Motion Data...', end='')
@@ -182,12 +196,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 raise
             else:
                 self.write_message(json.dumps({'message': 'renv_connected'}))
+                state['renv_connected'] = True
                 print('done')
         elif received_data['command'] == 'renv_disconnect':
             # Scratcから切断
             print('Disconnecting from R-env...', end='')
             ws.close()
             self.write_message(json.dumps({'message': 'renv_disconnected'}))
+            state['renv_connected'] = False
             print('done')
 
     def _send_message(self):
